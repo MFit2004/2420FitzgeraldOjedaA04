@@ -1,6 +1,6 @@
-import java.util.Set;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Represents a binary tree with unique integer values. Provides various methods to
@@ -81,6 +81,7 @@ public class UniqueTree {
             doubleEvenNumbers();
             root = temp;
         }
+
 
         if (root.right == null) {
             Node temp = root;

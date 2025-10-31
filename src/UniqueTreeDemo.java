@@ -41,6 +41,7 @@ class UniqueTreeDemo {
                 new Integer[]{24, null, null}
         );
 
+
         UniqueTree tree = new UniqueTree(treeData);
 
         tree.doubleEvenNumbers();
