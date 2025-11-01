@@ -1,6 +1,6 @@
+import java.util.Set;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Represents a binary tree with unique integer values. Provides various methods to
@@ -72,23 +72,14 @@ public class UniqueTree {
      * Doubles the value of all even numbers in the tree.
      */
     public void doubleEvenNumbers() {
-        if (root == null) return;
-        if (root.val % 2 == 0) root.val *= 2;
+        doubleEvenNumbers(root);
+    }
 
-        if (root.left == null) {
-            Node temp = root;
-            root = root.left;
-            doubleEvenNumbers();
-            root = temp;
-        }
-
-
-        if (root.right == null) {
-            Node temp = root;
-            root = root.right;
-            doubleEvenNumbers();
-            root = temp;
-        }
+    private void doubleEvenNumbers(Node x) {
+        if (x == null) return;
+        if (x.val % 2 == 0) x.val *= 2;
+        doubleEvenNumbers(x.left);
+        doubleEvenNumbers(x.right);
     }
 
     /**
@@ -96,22 +87,16 @@ public class UniqueTree {
      * @return the sum of all right children
      */
     public int sumOfRightChildren() {
-        int sum = 0;
         if (root == null) return 0;
-        Node temp = root;
+        return sumOfRightChildren(root);
+    }
 
-        if (root.right == null) {
-            sum += root.right.val;
-            root = root.right;
-            sum += sumOfRightChildren();
-            root = temp;
-        }
-
-        if (root.left == null) {
-            root = root.left;
-            sum += sumOfRightChildren();
-            root = temp;
-        }
+    private int sumOfRightChildren(Node x) {
+        if (x == null) return 0;
+        int sum = 0;
+        if (x.right != null) sum += x.right.val;
+        sum += sumOfRightChildren(x.left);
+        sum += sumOfRightChildren(x.right);
         return sum;
     }
 
@@ -121,7 +106,33 @@ public class UniqueTree {
      * @return the count of nodes with all children as leaves
      */
     public int countLeafParents() {
-        return 0; // TODO
+        return countLeafParents(root);
+    }
+
+    /**
+     * count number of Nodes 1 generation away from leaves
+     * @param x subject Node
+     * @return recursive count
+     */
+    private int countLeafParents(Node x) {
+        int count = 0;
+        if (x == null) return 0;
+        if (isLeaf(x.left) || isLeaf(x.right))
+            count++;
+
+        if (x.left != null)  count += countLeafParents(x.left);
+        if (x.right != null) count += countLeafParents(x.right);
+        return count;
+    }
+
+    /**
+     * determine if node passed is a leaf
+     * @param x subject Node
+     * @return true if x has no children
+     */
+    private boolean isLeaf(Node x) {
+        if (x == null) return false;
+        return (x.left == null && x.right == null);
     }
 
     /**
@@ -131,8 +142,37 @@ public class UniqueTree {
      */
     public double averageOfOddNumbers() {
         if (root == null) return 0;
+        double count = countOddNums(root);
+        return count == 0 ? 0 : sumOddNums(root) / count;
+    }
 
-        return 1; //TODO
+
+    /**
+     * get the sum of odd node values
+     * @param x subject node (determine if odd)
+     * @return sum of all odd values
+     */
+    public double sumOddNums(Node x) {
+        if (x == null) return 0d;
+        double sum = 0;
+        if (x.val % 2 == 1) sum += x.val;
+        sum += sumOddNums(x.left);
+        sum += sumOddNums(x.right);
+        return sum;
+    }
+
+    /**
+     * get the count of odd node values
+     * @param x subject node (determine if odd)
+     * @return count of all odd values
+     */
+    public double countOddNums(Node x) {
+        if (x == null) return 0d;
+        double count = 0d;
+        if (x.val % 2 == 1) count++;
+        count += countOddNums(x.left);
+        count += countOddNums(x.right);
+        return count;
     }
 
     /**
@@ -141,29 +181,43 @@ public class UniqueTree {
      * @return the difference between the largest and smallest values
      */
     public int greatestDifference() {
-        if (root == null) return 0;
+        int max = max(root);
+        int min = min(root);
+        return max - min;
+    }
 
-        int max = 0;
-        int min = 0;
-        int mid = (min + (max - min) / 2);
+    /**
+     * recursively find the largest value in tree
+     * @param x compair current max
+     * with this Node's value
+     * @return largest value
+     */
+    private int max(Node x) {
+        if (x == null) return Integer.MIN_VALUE;
+        int greatest = x.val;
+        int leftmax = max(x.left);
+        if (leftmax > greatest) greatest = leftmax;
+        int rightmax = max(x.right);
+        if (rightmax > greatest) greatest = rightmax;
+        return greatest;
+    }
 
-        if (root.val > max) max = root.val;
-        if (root.val < min) min = root.val;
+    /**
+     * recursively find the smallest value in tree
+     * @param x compair current min
+     * with this Node's value
+     * @return smallest value
+     */
+    private int min(Node x) {
+        if (x == null) return Integer.MAX_VALUE;
+        int smallest = x.val;
 
-        if (root.left == null) {
-            Node temp = root;
-            root = root.left;
-            greatestDifference();
-            root = temp;
-        }
-
-        if (root.right == null) {
-            Node temp = root;
-            root = root.right;
-            greatestDifference();
-            root = temp;
-        }
-        return max - min; // TODO
+        int leftmin = min(x.left);
+        if (leftmin < smallest) smallest = leftmin;
+        int rightmin = min(x.right);
+        if (rightmin < smallest) smallest = rightmin;
+        return smallest;
     }
 
 }
+
